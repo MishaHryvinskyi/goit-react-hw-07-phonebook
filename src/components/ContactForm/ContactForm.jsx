@@ -1,17 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
-import { getContacts } from 'redux/selector';
+import { addContact } from 'redux/operations';
+import { selectContacts } from 'redux/selector';
 import { nanoid } from 'nanoid';
 import { toast } from 'react-toastify';
 import { PhoneForm, PhoneLabel, Input, Btn } from './ContactForm.styled';
 
-
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
   const handleSubmit = e => {
-    e.preventDefault();
-
+    e.preventDefault(); 
     const contact = {
       id: nanoid(),
       name: e.currentTarget.elements.name.value,
@@ -24,10 +22,10 @@ export const ContactForm = () => {
 
     if (isExist) {
       return toast.warn(`${contact.name} is already in contacts.`);
-    };
+    }
 
-    dispatch(addContact(contact));
-    e.currentTarget.reset();
+    dispatch(addContact(contact)); 
+    e.currentTarget.reset(); 
   };
   
   return (

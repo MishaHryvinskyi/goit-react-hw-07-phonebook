@@ -1,34 +1,30 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/selector';
-import { deleteContact } from 'redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux'; 
+import { useEffect } from 'react';
+import {selectError, selectFilteredContacts, selectIsLoading } from 'redux/selector';
+import { fetchContacts, deleteContact } from 'redux/operations';
 import { List, ListItem, BtnDelite, Contact } from './ContactList.styled';
 
 export const ContactList = () => {
-  const contacts = useSelector(getContacts); 
-  const filter = useSelector(getFilter);
-  const dispatch = useDispatch();
+  const filteredContacts = useSelector(selectFilteredContacts); 
+  const isLoading = useSelector(selectIsLoading); 
+  const error = useSelector(selectError); 
+  const dispatch = useDispatch(); 
 
-  const filteredContacts = contacts?.filter(contact =>
-    contact?.name?.toLowerCase().includes(filter.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchContacts()); 
+  }, [dispatch]);
 
   const handleDeleteContact = id => {
-    dispatch(deleteContact(id));
+    dispatch(deleteContact(id)); 
   };
 
-  if (!filteredContacts?.length) {
-    return <Contact 
-    style={{ 
-      padding: '20px', 
-      color: 'red', 
-      fontSize: '24px'
-    }}>
-      No such contact found.
-    </Contact>;
-  }
-
   return (
-    <List>
+    <>
+    {!filteredContacts?.length && !error && !isLoading && (
+      <Contact>No contacts found</Contact>
+    )}
+    {error && <Contact>{error}</Contact>}
+      <List>
       {filteredContacts.map(({ id, name, number }) => (
         <ListItem key={id}>
           <Contact>
@@ -40,5 +36,6 @@ export const ContactList = () => {
         </ListItem>
       ))}
     </List>
+    </>
   );
 }
